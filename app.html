@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Digital Legacy Vault – Asset Recovery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Groww-style modern fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --primary: #00d09c;
+      --primary-dark: #00b88a;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border: #e1e5ec;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.15);
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      --radius-full: 999px;
+      --transition: 200ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      color: var(--text-main);
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Top nav */
+
+    .top-nav {
+      height: 60px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e9f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    @media (max-width: 640px) {
+      .top-nav {
+        padding: 0 16px;
+      }
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.98rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-logo-mark {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #1abc9c, #0fb875);
+    }
+
+    .nav-center {
+      display: flex;
+      gap: 28px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .nav-center span {
+      cursor: pointer;
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    .nav-center span.active {
+      color: var(--text-main);
+    }
+
+    .nav-center span.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -3px;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 999px;
+    }
+
+    .nav-right button {
+      border-radius: var(--radius-full);
+      border: none;
+      padding: 7px 18px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      background: var(--primary);
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0, 208, 156, 0.45);
+      transition: background-color var(--transition),
+        box-shadow var(--transition), transform var(--transition);
+    }
+
+    .nav-right button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 26px rgba(0, 208, 156, 0.55);
+    }
+
+    .nav-right button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px rgba(0, 208, 156, 0.45);
+    }
+
+    /* Progress tracker */
+
+    .progress-shell {
+      max-width: 960px;
+      margin: 18px auto 0;
+      padding: 0 40px;
+    }
+
+    @media (max-width: 640px) {
+      .progress-shell {
+        padding: 0 16px;
+      }
+    }
+
+    .progress-bar {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid #e5e9f0;
+      padding: 12px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .progress-item label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: default;
+      user-select: none;
+    }
+
+    .progress-item span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .progress-item input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1px solid #cbd5e1;
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      background: #ffffff;
+      position: relative;
+      cursor: default;
+      transition: border-color var(--transition),
+        background-color var(--transition);
+    }
+
+    .progress-item input[type="checkbox"]:checked {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .progress-item input[type="checkbox"]::after {
+      content: "";
+      position: absolute;
+      inset: 2px 1px 2px 3px;
+      border: solid #ffffff;
+      border-width: 0 0 2px 2px;
+      transform: rotate(-45deg) scale(0.7);
+    }
+
+    .progress-item.completed span {
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    /* Main content layout */
+
+    .main-shell {
+      max-width: 960px;
+      margin: 24px auto 40px;
+      padding: 0 40px;
+    }
+
+    @media (max-width: 640px) {
+      .main-shell {
+        padding: 0 16px;
+      }
+    }
+
+    /* Hero / landing */
+
+    .hero {
+      text-align: center;
+      padding: 120px 10px 100px;
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #1f2933;
+    }
+
+    .hero p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 22px;
+      border-radius: var(--radius-full);
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: var(--primary);
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 208, 156, 0.45);
+      transition: background-color var(--transition),
+        box-shadow var(--transition), transform var(--transition);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 30px rgba(0, 208, 156, 0.55);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 18px rgba(0, 208, 156, 0.45);
+    }
+
+    .btn-secondary {
+      border-radius: var(--radius-full);
+      border: 1px solid #cbd5e1;
+      padding: 8px 18px;
+      font-size: 0.86rem;
+      font-weight: 500;
+      background: #f8fafc;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: background-color var(--transition),
+        border-color var(--transition);
+    }
+
+    .btn-secondary:hover {
+      background: #edf2f7;
+      border-color: #b8c4d4;
+    }
+
+    /* Vault card */
+
+    .vault-card {
+      background: var(--card);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 22px 46px rgba(15, 23, 42, 0.12);
+      padding: 26px 30px 24px;
+      max-width: 680px;
+      margin: 40px auto 0;
+    }
+
+    @media (max-width: 640px) {
+      .vault-card {
+        padding: 22px 16px 18px;
+        margin-top: 24px;
+      }
+    }
+
+    .vault-card h2 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      text-align: left;
+      color: #1f2933;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .input-shell {
+      position: relative;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #dde3eb;
+      font-size: 0.9rem;
+      background: #ffffff;
+      outline: none;
+      color: var(--text-main);
+      transition: border-color var(--transition),
+        box-shadow var(--transition), background-color var(--transition);
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #a0aec0;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(0, 208, 156, 0.32);
+    }
+
+    .field-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .field-error {
+      font-size: 0.78rem;
+      color: #dc2626;
+    }
+
+    .vault-assets-row {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1.5fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .vault-assets-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .vault-footer-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    /* Overlays (auth, success & legacy details) */
+
+    .overlay-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+      z-index: 40;
+    }
+
+    .overlay-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: var(--shadow-soft);
+      padding: 20px 24px 24px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 16px;
+      top: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #9ca3af;
+    }
+
+    .modal-close:hover {
+      color: var(--text-main);
+    }
+
+    .auth-tabs {
+      border-bottom: 1px solid #e5e9f0;
+      display: flex;
+      gap: 18px;
+      margin-bottom: 14px;
+      font-size: 0.86rem;
+      font-weight: 500;
+    }
+
+    .auth-tab {
+      padding-bottom: 8px;
+      cursor: pointer;
+      color: var(--text-muted);
+      position: relative;
+    }
+
+    .auth-tab.active {
+      color: var(--text-main);
+    }
+
+    .auth-tab.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 999px;
+    }
+
+    .auth-heading {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .auth-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .auth-pane {
+      display: none;
+    }
+
+    .auth-pane.active {
+      display: block;
+    }
+
+    .auth-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 2px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .auth-tick {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 0.8rem;
+      opacity: 0;
+      transform: scale(0.6);
+      transition: opacity var(--transition), transform var(--transition);
+    }
+
+    .auth-tick.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .success-inner {
+      text-align: center;
+    }
+
+    .success-icon-wrap {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 6px auto 14px;
+      background: radial-gradient(circle at 30% 20%, #d1fae5, var(--primary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 18px 40px rgba(0, 208, 156, 0.55);
+      animation: popIn 420ms ease-out forwards;
+    }
+
+    .success-icon-inner {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    .success-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .success-text {
+      font-size: 0.94rem;
+      margin-bottom: 12px;
+    }
+
+    .success-note {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.4);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Legacy vault summary */
+
+    .legacy-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .legacy-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .legacy-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.86rem;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+
+    .legacy-row span:first-child {
+      color: var(--text-muted);
+    }
+
+    .legacy-message {
+      margin-top: 10px;
+      font-size: 0.86rem;
+      padding: 10px 12px;
+      background: #f9fafb;
+      border-radius: 10px;
+      max-height: 180px;
+      overflow: auto;
+      border: 1px solid #e5e7eb;
+    }
+
+    .legacy-empty {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 6px 0 2px;
+    }
+
+    /* Utility */
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Top Navigation -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <div class="nav-logo-mark"></div>
+      <span>Asset Recovery</span>
+    </div>
+    <nav class="nav-center">
+      <span class="active" id="navDashboard">Dashboard</span>
+      <span id="navLegacyVault">Legacy Vault</span>
+    </nav>
+    <div class="nav-right">
+      <button id="btnNavLogin">Login</button>
+    </div>
+  </header>
+
+  <!-- Progress Tracker with checkboxes -->
+  <div class="progress-shell">
+    <div class="progress-bar">
+      <div class="progress-item" id="progressStep1">
+        <label>
+          <input type="checkbox" id="checkStep1" disabled />
+          <span>Step 1 · Authenticate</span>
+        </label>
+      </div>
+      <div class="progress-item" id="progressStep2">
+        <label>
+          <input type="checkbox" id="checkStep2" disabled />
+          <span>Step 2 · Configure Vault</span>
+        </label>
+      </div>
+      <div class="progress-item" id="progressStep3">
+        <label>
+          <input type="checkbox" id="checkStep3" disabled />
+          <span>Step 3 · Activation Success</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-shell">
+    <!-- Landing / hero -->
+    <section class="hero" id="heroSection">
+      <h1>Secure your digital legacy</h1>
+      <p>Built for the next generation</p>
+      <button class="btn-primary" id="btnHeroGetStarted">Get Started</button>
+    </section>
+
+    <!-- Vault configuration view -->
+    <section class="vault-card hidden" id="vaultSection">
+      <h2>Configure Your Legacy Vault</h2>
+
+      <form id="vaultForm">
+        <div class="field-group">
+          <label for="beneficiaryContact">Beneficiary Email or Phone</label>
+          <div class="input-shell">
+            <input id="beneficiaryContact" type="text"
+              placeholder="example@email.com or +1 (555) 555-5555" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="importantMessage">Important Message</label>
+          <div class="input-shell">
+            <textarea id="importantMessage"
+              placeholder="Write a final message to your beneficiary (instructions, wishes, explanations)…"></textarea>
+          </div>
+          <div class="field-hint" id="wordCounter">0 / 1000 words</div>
+        </div>
+
+        <div class="field-group">
+          <label>Asset Details</label>
+          <div class="vault-assets-row">
+            <div class="input-shell">
+              <input id="assetApp" type="text" placeholder="App/Website" />
+            </div>
+            <div class="input-shell">
+              <input id="assetUser" type="text" placeholder="Username/Email" />
+            </div>
+            <div class="input-shell">
+              <input id="assetPass" type="text" placeholder="Password/Key" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="checkinFrequency">Check-in Frequency</label>
+          <div class="input-shell">
+            <select id="checkinFrequency">
+              <option>Every 3 Months</option>
+              <option>Every 6 Months</option>
+              <option>Every 12 Months</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-error" id="vaultError"></div>
+
+        <div class="vault-footer-row">
+          <button type="button" class="btn-secondary" id="btnVaultCancel">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary">
+            Save &amp; Activate
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Authentication Modal -->
+  <div class="overlay-backdrop" id="authOverlay">
+    <div class="modal-card">
+      <div class="modal-close" id="authClose">&times;</div>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" data-auth-tab="signin">Sign In</div>
+        <div class="auth-tab" data-auth-tab="forgot">Forgot Password</div>
+      </div>
+
+      <!-- Sign In pane -->
+      <div class="auth-pane active" data-pane="signin">
+        <div class="auth-heading">Sign In to Your Account</div>
+        <div class="auth-sub">Use the same email you will protect in your legacy vault.</div>
+
+        <form id="signInForm">
+          <div class="field-group">
+            <label for="signinEmail">Email Address</label>
+            <div class="input-shell">
+              <input id="signinEmail" type="email" placeholder="you@example.com"
+                autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="signinPassword">Password</label>
+            <div class="input-shell">
+              <input id="signinPassword" type="password" placeholder="••••••••"
+                autocomplete="current-password" />
+            </div>
+          </div>
+
+          <div class="field-error" id="signinError"></div>
+
+          <div class="auth-status-row">
+            <div class="auth-status-left">
+              <div class="auth-tick" id="authTickSignIn">✓</div>
+            </div>
+            <button type="submit" class="btn-primary">Sign in</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Forgot Password pane -->
+      <div class="auth-pane" data-pane="forgot">
+        <div class="auth-heading">Reset Your Password</div>
+        <div class="auth-sub">Enter your email or mobile number to receive a reset link.</div>
+
+        <form id="forgotForm">
+          <div class="field-group">
+            <label for="forgotContact">Email or Mobile</label>
+            <div class="input-shell">
+              <input id="forgotContact" type="text"
+                placeholder="email@example.com or +1 (555) 555-5555" />
+            </div>
+          </div>
+
+          <div class="field-error" id="forgotError"></div>
+
+          <div class="auth-status-row">
+            <div class="auth-status-left">
+              <div class="auth-tick" id="authTickForgot">✓</div>
+            </div>
+            <button type="submit" class="btn-primary">Send Reset Code</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final Success Modal -->
+  <div class="overlay-backdrop" id="successOverlay">
+    <div class="modal-card">
+      <div class="success-inner">
+        <div class="success-icon-wrap">
+          <div class="success-icon-inner">✅</div>
+        </div>
+        <div class="success-title">Legacy Vault Activated</div>
+        <div class="success-text">
+          Your configuration has been saved for your beneficiary.
+        </div>
+        <div class="success-note">
+          In a full product, encrypted logic would now monitor your check-ins
+          and release your legacy message only under the right conditions.
+        </div>
+        <button class="btn-primary" id="btnGoDashboard">Go to Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legacy Vault configuration summary -->
+  <div class="overlay-backdrop" id="legacyOverlay">
+    <div class="modal-card">
+      <div class="modal-close" id="legacyClose">&times;</div>
+      <div class="legacy-title">Legacy Vault configuration</div>
+      <div class="legacy-sub">
+        This is a summary of the details you used to configure your vault.
+      </div>
+
+      <div id="legacyContent">
+        <div class="legacy-row">
+          <span>Beneficiary</span>
+          <span id="legacyBeneficiary"></span>
+        </div>
+        <div class="legacy-row">
+          <span>Asset</span>
+          <span id="legacyAsset"></span>
+        </div>
+        <div class="legacy-row">
+          <span>Login</span>
+          <span id="legacyLogin"></span>
+        </div>
+        <div class="legacy-row">
+          <span>Password / Key</span>
+          <span id="legacyPassword"></span>
+        </div>
+        <div class="legacy-row">
+          <span>Check‑in frequency</span>
+          <span id="legacyFrequency"></span>
+        </div>
+
+        <div class="legacy-message" id="legacyMessage"></div>
+      </div>
+
+      <div class="legacy-empty hidden" id="legacyEmpty">
+        Complete all 3 steps to see your configured legacy vault details here.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // Sections
+      const heroSection = document.getElementById("heroSection");
+      const vaultSection = document.getElementById("vaultSection");
+
+      // Nav items
+      const navDashboard = document.getElementById("navDashboard");
+      const navLegacyVault = document.getElementById("navLegacyVault");
+
+      // Buttons to open auth
+      const btnHeroGetStarted = document.getElementById("btnHeroGetStarted");
+      const btnNavLogin = document.getElementById("btnNavLogin");
+
+      // Auth overlay elements
+      const authOverlay = document.getElementById("authOverlay");
+      const authClose = document.getElementById("authClose");
+      const authTabs = document.querySelectorAll(".auth-tab");
+      const authPanes = document.querySelectorAll(".auth-pane");
+      const signInForm = document.getElementById("signInForm");
+      const forgotForm = document.getElementById("forgotForm");
+      const authTickSignIn = document.getElementById("authTickSignIn");
+      const authTickForgot = document.getElementById("authTickForgot");
+      const signinError = document.getElementById("signinError");
+      const forgotError = document.getElementById("forgotError");
+
+      // Vault form and cancel
+      const vaultForm = document.getElementById("vaultForm");
+      const btnVaultCancel = document.getElementById("btnVaultCancel");
+      const vaultError = document.getElementById("vaultError");
+
+      // Vault inputs
+      const beneficiaryContact = document.getElementById("beneficiaryContact");
+      const importantMessage = document.getElementById("importantMessage");
+      const assetApp = document.getElementById("assetApp");
+      const assetUser = document.getElementById("assetUser");
+      const assetPass = document.getElementById("assetPass");
+      const checkinFrequency = document.getElementById("checkinFrequency");
+
+      // Success overlay
+      const successOverlay = document.getElementById("successOverlay");
+      const btnGoDashboard = document.getElementById("btnGoDashboard");
+
+      // Legacy summary overlay
+      const legacyOverlay = document.getElementById("legacyOverlay");
+      const legacyClose = document.getElementById("legacyClose");
+      const legacyBeneficiary = document.getElementById("legacyBeneficiary");
+      const legacyAsset = document.getElementById("legacyAsset");
+      const legacyLogin = document.getElementById("legacyLogin");
+      const legacyPassword = document.getElementById("legacyPassword");
+      const legacyFrequency = document.getElementById("legacyFrequency");
+      const legacyMessage = document.getElementById("legacyMessage");
+      const legacyContent = document.getElementById("legacyContent");
+      const legacyEmpty = document.getElementById("legacyEmpty");
+
+      // Progress checkboxes
+      const checkStep1 = document.getElementById("checkStep1");
+      const checkStep2 = document.getElementById("checkStep2");
+      const checkStep3 = document.getElementById("checkStep3");
+      const progressStep1 = document.getElementById("progressStep1");
+      const progressStep2 = document.getElementById("progressStep2");
+      const progressStep3 = document.getElementById("progressStep3");
+
+      // Word count
+      const wordCounter = document.getElementById("wordCounter");
+
+      // Store configuration once all steps are done
+      let vaultConfig = null;
+
+      function updateWordCount() {
+        const text = importantMessage.value.trim();
+        const count = text ? text.split(/\s+/).length : 0;
+        wordCounter.textContent = count + " / 1000 words";
+      }
+
+      importantMessage.addEventListener("input", updateWordCount);
+
+      function openAuth() {
+        authOverlay.classList.add("active");
+      }
+
+      function closeAuth() {
+        authOverlay.classList.remove("active");
+      }
+
+      function openSuccess() {
+        successOverlay.classList.add("active");
+      }
+
+      function closeSuccess() {
+        successOverlay.classList.remove("active");
+      }
+
+      function openLegacy() {
+        if (!vaultConfig) {
+          legacyContent.classList.add("hidden");
+          legacyEmpty.classList.remove("hidden");
+        } else {
+          legacyContent.classList.remove("hidden");
+          legacyEmpty.classList.add("hidden");
+
+          legacyBeneficiary.textContent = vaultConfig.beneficiaryContact;
+          legacyAsset.textContent = vaultConfig.assetApp || "-";
+          legacyLogin.textContent = vaultConfig.assetUser || "-";
+          legacyPassword.textContent = vaultConfig.assetPass || "-";
+          legacyFrequency.textContent = vaultConfig.checkinFrequency;
+          legacyMessage.textContent = vaultConfig.importantMessage || "-";
+        }
+        legacyOverlay.classList.add("active");
+      }
+
+      function closeLegacy() {
+        legacyOverlay.classList.remove("active");
+      }
+
+      function showVault() {
+        heroSection.classList.add("hidden");
+        vaultSection.classList.remove("hidden");
+        navDashboard.classList.remove("active");
+        navLegacyVault.classList.add("active");
+      }
+
+      function showHero() {
+        heroSection.classList.remove("hidden");
+        vaultSection.classList.add("hidden");
+        navDashboard.classList.add("active");
+        navLegacyVault.classList.remove("active");
+      }
+
+      function setAuthPane(name) {
+        authTabs.forEach((tab) => {
+          const isActive = tab.getAttribute("data-auth-tab") === name;
+          tab.classList.toggle("active", isActive);
+        });
+        authPanes.forEach((pane) => {
+          const isActive = pane.getAttribute("data-pane") === name;
+          pane.classList.toggle("active", isActive);
+        });
+      }
+
+      // Progress helpers
+      function completeStep(step) {
+        if (step === 1) {
+          checkStep1.checked = true;
+          progressStep1.classList.add("completed");
+        }
+        if (step === 2) {
+          checkStep2.checked = true;
+          progressStep2.classList.add("completed");
+        }
+        if (step === 3) {
+          checkStep3.checked = true;
+          progressStep3.classList.add("completed");
+        }
+      }
+
+      function resetProgress() {
+        [checkStep1, checkStep2, checkStep3].forEach((c) => (c.checked = false));
+        [progressStep1, progressStep2, progressStep3].forEach((p) =>
+          p.classList.remove("completed")
+        );
+      }
+
+      // Simple validators
+      function isEmail(value) {
+        return /^\S+@\S+\.\S+$/.test(value);
+      }
+
+      function handleAuthContinue(tickEl) {
+        tickEl.classList.add("visible");
+        setTimeout(() => {
+          tickEl.classList.remove("visible");
+          closeAuth();
+          showVault();
+          completeStep(1);
+        }, 900);
+      }
+
+      // Event wiring – nav
+      navDashboard.addEventListener("click", () => {
+        showHero();
+      });
+
+      navLegacyVault.addEventListener("click", () => {
+        openLegacy();
+      });
+
+      // Buttons to open auth
+      btnHeroGetStarted.addEventListener("click", openAuth);
+      btnNavLogin.addEventListener("click", openAuth);
+
+      authClose.addEventListener("click", closeAuth);
+
+      authOverlay.addEventListener("click", (e) => {
+        if (e.target === authOverlay) {
+          closeAuth();
+        }
+      });
+
+      authTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const tabName = tab.getAttribute("data-auth-tab");
+          setAuthPane(tabName);
+        });
+      });
+
+      // Auth forms with validation
+      signInForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("signinEmail").value.trim();
+        const password = document.getElementById("signinPassword").value.trim();
+        signinError.textContent = "";
+
+        if (!email || !password) {
+          signinError.textContent = "Please fill in both email and password.";
+          return;
+        }
+        if (!isEmail(email)) {
+          signinError.textContent = "Enter a valid email address.";
+          return;
+        }
+
+        handleAuthContinue(authTickSignIn);
+      });
+
+      forgotForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const contact = document.getElementById("forgotContact").value.trim();
+        forgotError.textContent = "";
+        if (!contact) {
+          forgotError.textContent = "Please enter your email or mobile number.";
+          return;
+        }
+        handleAuthContinue(authTickForgot);
+      });
+
+      // Vault form validation + activation (Step 2 & 3)
+      vaultForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        vaultError.textContent = "";
+
+        const b = beneficiaryContact.value.trim();
+        const msg = importantMessage.value.trim();
+        const aApp = assetApp.value.trim();
+        const aUser = assetUser.value.trim();
+        const aPass = assetPass.value.trim();
+        const freq = checkinFrequency.value;
+
+        if (!b || !msg || !aApp || !aUser || !aPass) {
+          vaultError.textContent =
+            "Please fill beneficiary, message and all asset fields before activating.";
+          return;
+        }
+
+        // Save configuration
+        vaultConfig = {
+          beneficiaryContact: b,
+          importantMessage: msg,
+          assetApp: aApp,
+          assetUser: aUser,
+          assetPass: aPass,
+          checkinFrequency: freq,
+        };
+
+        completeStep(2);
+        completeStep(3);
+        openSuccess();
+      });
+
+      btnVaultCancel.addEventListener("click", () => {
+        showHero();
+      });
+
+      // Success overlay
+      successOverlay.addEventListener("click", (e) => {
+        if (e.target === successOverlay) {
+          closeSuccess();
+        }
+      });
+
+      btnGoDashboard.addEventListener("click", () => {
+        closeSuccess();
+        showHero();
+        // Keep progress & vaultConfig so Legacy Vault button shows details
+      });
+
+      // Legacy overlay closing
+      legacyOverlay.addEventListener("click", (e) => {
+        if (e.target === legacyOverlay) {
+          closeLegacy();
+        }
+      });
+
+      legacyClose.addEventListener("click", closeLegacy);
+
+      // Initial state
+      showHero();
+      setAuthPane("signin");
+      resetProgress();
+      updateWordCount();
+    })();
+  </script>
+</body>
+
+</html>
