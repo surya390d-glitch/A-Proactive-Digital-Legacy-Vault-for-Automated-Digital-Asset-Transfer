@@ -1,5 +1,6 @@
 🚀 Project Name
-A brief, punchy one-sentence description of what this web app actually does.
+
+    A brief, punchy one-sentence description of what this web app actually does.
 
 ✨ Features
 
